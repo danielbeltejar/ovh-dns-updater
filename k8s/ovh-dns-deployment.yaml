@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ovh-dns-updater
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ovh-dns-updater
+  template:
+    metadata:
+      labels:
+        app: ovh-dns-updater
+    spec:
+      containers:
+      - name: ovh-dns-updater
+        image: your-ovh-dns-updater-image:latest
+        env:
+        - name: OVH_ENDPOINT
+          value: "ovh-eu"
+        - name: OVH_APPLICATION_KEY
+          value: ""
+        - name: OVH_APPLICATION_SECRET
+          value: ""
+        - name: OVH_CONSUMER_KEY
+          value: ""

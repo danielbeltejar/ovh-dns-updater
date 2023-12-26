@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ovh-dns-config
+data:
+  hosts.json: |-
+    [
+      {"domain": "danielbeltejar.es", "subdomain": ""},
+      {"domain": "danielbeltejar.es", "subdomain": "forum"},
+      {"domain": "danielbeltejar.es", "subdomain": "api.forum"}
+    ]
