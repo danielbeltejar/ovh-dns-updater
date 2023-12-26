@@ -85,25 +85,25 @@ def update_record(domain, subdomain, new_ip, _ttl=600):
     global records_changed
     typ = 'AAAA' if ":" in new_ip else 'A'
     path = f"/domain/zone/{domain}/record"
-    result = client.get(path, fieldType=typ, subDomain=subdomain)
+    result = ovh_client.get(path, fieldType=typ, subDomain=subdomain)
 
     if len(result) != 1:
-        result = client.post(path, fieldType=typ, subDomain=subdomain, target=new_ip, ttl=_ttl)
-        client.post(f"/domain/zone/{domain}/refresh")
-        result = client.get(path, fieldType=typ, subDomain=subdomain)
+        result = ovh_client.post(path, fieldType=typ, subDomain=subdomain, target=new_ip, ttl=_ttl)
+        ovh_client.post(f"/domain/zone/{domain}/refresh")
+        result = ovh_client.get(path, fieldType=typ, subDomain=subdomain)
         record_id = result[0]
         records_changed += 1
         print(f"{time.asctime(time.localtime(time.time()))} : ### created new record {typ} for {subdomain}.{domain}")
     else:
         record_id = result[0]
         path = f"/domain/zone/{domain}/record/{record_id}"
-        result = client.get(path)
+        result = ovh_client.get(path)
         oldip = result['target']
         if oldip == new_ip:
             return
         else:
-            result = client.put(path, subDomain=subdomain, target=new_ip, ttl=_ttl)
-            client.post(f"/domain/zone/{domain}/refresh")
+            result = ovh_client.put(path, subDomain=subdomain, target=new_ip, ttl=_ttl)
+            ovh_client.post(f"/domain/zone/{domain}/refresh")
             records_changed += 1
 
 
@@ -112,12 +112,12 @@ def delete_record(domain, subdomain, typ):
     Delete an A or AAAA record if it exists.
     """
     global records_changed
-    result = client.get(f"/domain/zone/{domain}/record", fieldType=typ, subDomain=subdomain)
+    result = ovh_client.get(f"/domain/zone/{domain}/record", fieldType=typ, subDomain=subdomain)
     if len(result) == 1:
         record_id = result[0]
         print(f"{time.asctime(time.localtime(time.time()))} : ### deleting record {typ} for {subdomain}.{domain}")
-        client.delete(f"/domain/zone/{domain}/record/{record_id}")
-        client.post(f"/domain/zone/{domain}/refresh")
+        ovh_client.delete(f"/domain/zone/{domain}/record/{record_id}")
+        ovh_client.post(f"/domain/zone/{domain}/refresh")
         records_changed += 1
 
 
@@ -130,7 +130,7 @@ def timestamp():
 
 # Main script logic
 credentials = get_ovh_credentials()
-client = ovh.Client(**credentials)
+ovh_client = ovh.Client(**credentials)
 
 # Use 'get_config_map()' to retrieve the hosts list
 hosts = get_config_map()
