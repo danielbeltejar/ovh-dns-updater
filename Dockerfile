@@ -6,4 +6,4 @@ COPY requirements.txt .
 
 RUN pip install -r requirements.txt --user
 
-ENTRYPOINT [ "python", "/app/main.py" ]
+ENTRYPOINT [ "python", "/app/ovh-dns-updater.py" ]
