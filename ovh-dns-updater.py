@@ -136,7 +136,7 @@ client = ovh.Client(**credentials)
 hosts = get_config_map()
 
 checkDNS_interval_hrs = 12.1
-current_ip_file = "/tmp/current_ip.json"
+current_ip_file = "/data/current_ip.json"
 
 # Retrieve current IPv4 and IPv6
 current_ipv4 = get_current_ip(4)
