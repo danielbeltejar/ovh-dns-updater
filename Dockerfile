@@ -10,8 +10,6 @@ FROM cgr.dev/chainguard/python:latest
 
 WORKDIR /app
 
-COPY --from=builder /home/nonroot/.local/lib/python3.12/site-packages /home/nonroot/.local/lib/python3.12/site-packages
-
 COPY main.py .
 
 ENTRYPOINT [ "python", "/app/main.py" ]
