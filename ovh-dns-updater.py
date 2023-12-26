@@ -144,13 +144,12 @@ current_ipv6 = get_current_ip(6)
 
 # Reload saved values & compare
 try:
-    with open(current_ip_file, 'rw') as f:
+    with open(current_ip_file, 'r') as f:
         old_time, old_ipv4, old_ipv6 = json.load(f)
     need_update = (old_ipv4 != current_ipv4) or (old_ipv6 != current_ipv6) or (
-            (old_time - time.time()) > 3600.0 * checkDNS_interval_hrs)
+                (old_time - time.time()) > 3600.0 * checkDNS_interval_hrs)
 except IOError:
     need_update = True
-
 if need_update:
     records_changed = 0
     default_ttl = 600
