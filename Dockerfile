@@ -10,6 +10,4 @@ FROM cgr.dev/chainguard/python:latest
 
 WORKDIR /app
 
-COPY main.py .
-
 ENTRYPOINT [ "python", "/app/main.py" ]
