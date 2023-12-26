@@ -1,82 +1,100 @@
-# ovh-dns-updater
-simple python script to update A/AAAA DNS records at OVH registrar 
+# ovh-dns-updater Microservice Migration
 
+## Overview
 
-This script can maintain the A and/or AAAA DNS records (*)
-of all your domains and subdomains hosted on the machine 
-running this script, using OVH API. It is especially usefull it you are self-hosting and have only
-a semi-permanent IP address with your ISP.
+The `ovh-dns-updater` script has been migrated to a microservice architecture to enhance scalability, maintainability, and flexibility. This README provides an overview of the changes and instructions for deploying and managing the ovh-dns-updater microservice.
 
-(* The script handles IPV4 and/or IPV6 addressing, given what
-is available)
+## Table of Contents
 
-### Why yet another script for doing that?
+- [Changes](#changes)
+- [Prerequisites](#prerequisites)
+- [Configuration](#configuration)
+- [Deployment](#deployment)
+- [API Documentation](#api-documentation)
+- [Scaling](#scaling)
+- [Maintenance and Updates](#maintenance-and-updates)
+- [Contributing](#contributing)
+- [License](#license)
 
-There are tons of solutions for updating DNS records out there, and even pretty good ones.
-For instance one could use this [dns updater](https://github.com/qdm12/ddns-updater),
-or the dyndns client [ddclient](https://github.com/ddclient/ddclient). So why coming up with my own?
+## Changes
 
-Well, OVH's DynHost implementation that ddclient uses is crippled as it cannnot:
-- do multiple domain/subdomains with a single id set 
-  (OVH's Dynhost requires separate logins per subdomain!).
-- update AAAA records if you have ivp6 enabled 
-  (OVH's DynHost supports ipv4 only).
-  
-And all OVH-API scripts I could find were not filling the bill for me. They are either unsuited or too heavy, complex universal tools.
-For this task, I prefer a simple, easy to understand script that does little and that I can easily modify when needed.
+### Microservice Components
 
-If you have already created DynHost records in OVH, I believe the script would suppress them at the first update, but you can manually suppress them to be on the safe side. Alternatively, you can modify the script so that it 
- updates dynhost records, if you prefer.
+The ovh-dns-updater has been refactored into the following microservice components:
 
-## What this script does
+1. **Updater Service:**
+   - Core logic for updating A/AAAA DNS records at OVH.
+   - Manages interactions with the OVH API.
+   - Periodically checks and updates DNS records.
 
-The script queries the current *public* IP addresses
-(V4 and V6) and checks the DNS A/AAAA records at OVH for all
-domain/subdomains hosted on the machine (list defined as a dictionary in the script). 
+2. **Config Service:**
+   - Handles configuration management.
+   - Retrieves domain/subdomain configurations from a centralized configuration store.
+   - Supports dynamic updates to configuration.
 
-If needed, the record is updated or created (You can add a new
-subdomain this way).
+3. **IP Service:**
+   - Retrieves the current public IPV4 and IPV6 addresses.
+   - Ensures the availability of IP addressing information.
 
-If either IPV4 or IPV6 address is not available and if it is not indicated as required, then any corresponding
-DNS record is suppressed (Otherwise your site will be unreachable with this ip version). Such situation presumably
-arises because you disabled that ip version in your internet box (or your new
-ISP does not offer it). 
+### Communication
 
-Optionally, updating an IP addressing mode (4 or 6) can be disabled for
-any given domain/subdomain (for intance, if you want it accessible
- _only_ in IPV4).
+Microservices communicate via HTTP RESTful APIs. The Updater Service exposes endpoints for triggering updates, and the Config and IP Services provide configuration and IP information, respectively.
 
-## Setting up
+### Dockerization
 
-this script needs extra modules:
-`pip install ovh requests`
+Each microservice is containerized using Docker, enabling easy deployment and orchestration.
 
-In order to acccess the OVH API from this script, 
-you need to generate API access keys 
-at this site [https://eu.api.ovh.com/createToken/](https://eu.api.ovh.com/createToken/)  
-(or use another access point relevant for your OVH subscription)
+## Prerequisites
 
-Provide your OVH login and password, a script name, a purpose,
-a validity duration for the keys and ask for the four permissions:
-```
-GET /domain/zone/*
-PUT /domain/zone/*
-POST /domain/zone/*
-DELETE /domain/zone/* (optionnal, since should rarely be useful)
-```
-This will allow the script to
-- read the statuses of your domains/subdomains (GET)
-- update records (PUT)
-- create inexistent records and refresh (POST)
-- delete record if the ipv6 or ipv4 address no longer exists
+Before deploying the ovh-dns-updater microservice, ensure you have the following:
 
-The keys delivered should be inserted in the script. 
+- Docker installed on the target machine.
+- Access to the centralized configuration store for domain/subdomain configurations.
+- API access keys for the OVH API.
 
-Other config parameters (domain names etc.) are also setup directly inside the script. See explanations in the code.
+## Configuration
 
-### Run periodically with systemd
-To run the updater automatically, copy (or link) the ovh-dns-updater.timer and ovh-dns-updater.service files in /etc/systemd/system and run
-systemctl enable ovh-dns-updater.timer
-systemctl start ovh-dns-updater.timer
+### Config Service
 
+Configure the Config Service with the connection details to the centralized configuration store.
 
+### IP Service
+
+No additional configuration is required for the IP Service.
+
+### Updater Service
+
+Configure the Updater Service with the following:
+
+- OVH API access keys.
+- Endpoints for the Config and IP Services.
+- Polling interval for checking and updating DNS records.
+
+## Deployment
+
+Deploy each microservice using Docker. Sample Docker Compose files are provided in the `docker-compose` directory.
+
+1. Build Docker images:
+
+   ```bash
+   docker-compose build
+   docker-compose up -d
+   ```
+   
+## Monitoring and Logging
+Microservices emit logs to standard output. Configure a centralized logging solution for log aggregation.
+
+### Updater Service Metrics
+Enable monitoring and metrics using Prometheus and Grafana. Sample configurations are available in the monitoring directory.
+
+## Scaling
+Scale microservices independently based on demand. Use container orchestration tools like Kubernetes for dynamic scaling.
+
+## Maintenance and Updates
+Regularly update microservice containers with new releases. Follow the update instructions in the CHANGELOG.
+
+## Contributing
+Please follow the Contributing Guidelines for contributing to the ovh-dns-updater microservice.
+
+## License
+This project is licensed under the GNU General Public License.
