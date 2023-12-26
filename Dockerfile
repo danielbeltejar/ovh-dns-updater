@@ -6,8 +6,4 @@ COPY requirements.txt .
 
 RUN pip install -r requirements.txt --user
 
-FROM cgr.dev/chainguard/python:latest
-
-WORKDIR /app
-
 ENTRYPOINT [ "python", "/app/main.py" ]
