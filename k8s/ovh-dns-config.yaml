@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: ovh-dns-config
 data:
-  hosts.json: |-
+  hosts: |-
     [
       {"domain": "danielbeltejar.es", "subdomain": ""},
       {"domain": "danielbeltejar.es", "subdomain": "forum"},
