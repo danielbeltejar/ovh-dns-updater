@@ -7,7 +7,7 @@ import time
 ovh_client = ovh.Client()
 ip_versions_required = [4]  # MUST not be empty. Can be [4],[6] or [4,6]
 
-default_ttl = 600  # seconds
+default_ttl = 60  # seconds
 checkDNS_interval_hrs = 12.1
 current_ip_file = "/tmp/current_ip.json"
 records_changed = 0
