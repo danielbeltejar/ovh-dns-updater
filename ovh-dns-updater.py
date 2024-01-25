@@ -3,7 +3,6 @@ import os
 import ovh
 import requests
 import time
-from kubernetes import client, config
 
 ovh_client = ovh.Client()
 ip_versions_required = [4]  # MUST not be empty. Can be [4],[6] or [4,6]
@@ -113,7 +112,7 @@ def update_record(domain, subdomain, new_ip, _ttl=600):
         # record exists
         record_id = result[0]
         path = "/domain/zone/{}/record/{}".format(domain, record_id)
-        result = client.get(path)
+        result = ovh_client.get(path)
         oldip = result['target']
         # print('record exists, with ip :',oldip)
         if oldip == new_ip:
@@ -207,3 +206,6 @@ if need_update:
 else:
     # print("nothing to do!")
     pass
+
+time.sleep(300)
+
