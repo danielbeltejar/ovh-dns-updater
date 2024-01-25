@@ -44,13 +44,7 @@ def get_config_map():
     """
     Load in-cluster configuration and fetch ConfigMap data.
     """
-    config.load_incluster_config()
-    namespace = get_namespace()
-    v1 = client.CoreV1Api()
-    config_map_name = "ovh-dns-config"
-    config_map = v1.read_namespaced_config_map(config_map_name, namespace)
-    hosts_json = config_map.data.get("hosts.json", "[]")
-    return json.loads(hosts_json)
+    return json.loads(os.environ.get("OVH_HOSTS", ""))
 
 
 def get_current_ip(v=4):
