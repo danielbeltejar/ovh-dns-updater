@@ -204,6 +204,5 @@ def do():
 while True:
     current_ipv4 = get_current_ip(4)
     current_ipv6 = get_current_ip(6)
-    print('current ips: {} ; {}'.format(current_ipv4, current_ipv6))
     do()
     time.sleep(60)
