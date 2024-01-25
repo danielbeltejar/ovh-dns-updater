@@ -160,52 +160,55 @@ hosts = get_config_map()
 print('current ips: {} ; {}'.format(current_ipv4, current_ipv6))
 print(hosts)
 
-# reload saved values & compare
-try:
-    with open(current_ip_file, 'r') as f:
-        old_time, old_ipv4, old_ipv6 = json.load(f)
-    need_update = (old_ipv4 != current_ipv4) or (old_ipv6 != current_ipv6) or (
-            (old_time - time.time()) > 3600.0 * checkDNS_interval_hrs)
-except IOError:
-    # print("No old ips recorded")
-    need_update = True
-if need_update:
-    records_changed = 0
+
+def do():
     try:
-        for host in hosts:
-            domain = host["domain"]
-            subdomain = host["subdomain"]
-            if ('ipv4' not in host) or (host['ipv4'] != False):
-                if current_ipv4:
-                    ttl = default_ttl if ('ttl' not in host) else host['ttl']
-                    update_record(domain, subdomain, current_ipv4, _ttl=ttl)
+        with open(current_ip_file, 'r') as f:
+            old_time, old_ipv4, old_ipv6 = json.load(f)
+        need_update = (old_ipv4 != current_ipv4) or (old_ipv6 != current_ipv6) or (
+                (old_time - time.time()) > 3600.0 * checkDNS_interval_hrs)
+    except IOError:
+        # print("No old ips recorded")
+        need_update = True
+    if need_update:
+        records_changed = 0
+        try:
+            for host in hosts:
+                domain = host["domain"]
+                subdomain = host["subdomain"]
+                if ('ipv4' not in host) or (host['ipv4'] != False):
+                    if current_ipv4:
+                        ttl = default_ttl if ('ttl' not in host) else host['ttl']
+                        update_record(domain, subdomain, current_ipv4, _ttl=ttl)
+                    else:
+                        delete_record(domain, subdomain, 'A')
                 else:
-                    delete_record(domain, subdomain, 'A')
-            else:
-                # print("Not touching A record for {}.{}, as instructed".format(subdomain, domain))
-                pass
-            if ('ipv6' not in host) or (host['ipv6'] != False):
-                if current_ipv6:
-                    ttl = default_ttl if ('ttl' not in host) else host['ttl']
-                    update_record(domain, subdomain, current_ipv6, _ttl=ttl)
+                    # print("Not touching A record for {}.{}, as instructed".format(subdomain, domain))
+                    pass
+                if ('ipv6' not in host) or (host['ipv6'] != False):
+                    if current_ipv6:
+                        ttl = default_ttl if ('ttl' not in host) else host['ttl']
+                        update_record(domain, subdomain, current_ipv6, _ttl=ttl)
+                    else:
+                        delete_record(domain, subdomain, 'AAAA')
                 else:
-                    delete_record(domain, subdomain, 'AAAA')
-            else:
-                # print("Not touching AAAA record for {}.{}, as instructed".format(subdomain, domain))
-                pass
-        # all hosts records have been updated without errors, log change and save current addresses
-        print("{} : new addresses {} ; {} -- {} records updates".format(timestamp(), current_ipv4, current_ipv6,
-                                                                        records_changed))
-        with open(current_ip_file, 'w') as f:
-            json.dump([time.time(), current_ipv4, current_ipv6], f)
-    except Exception as e:  # some error occured (API down, keys expired...?),
-        msg = "{} : ### error {} while updating records!! {} records updated with new addresses {} ; {}".format(
-            timestamp(), str(e), records_changed, current_ipv4, current_ipv6)
-        print(msg)
-        # not saving new addresses, so that update is attempted again.
-else:
-    # print("nothing to do!")
-    pass
+                    # print("Not touching AAAA record for {}.{}, as instructed".format(subdomain, domain))
+                    pass
+            # all hosts records have been updated without errors, log change and save current addresses
+            print("{} : new addresses {} ; {} -- {} records updates".format(timestamp(), current_ipv4, current_ipv6,
+                                                                            records_changed))
+            with open(current_ip_file, 'w') as f:
+                json.dump([time.time(), current_ipv4, current_ipv6], f)
+        except Exception as e:  # some error occured (API down, keys expired...?),
+            msg = "{} : ### error {} while updating records!! {} records updated with new addresses {} ; {}".format(
+                timestamp(), str(e), records_changed, current_ipv4, current_ipv6)
+            print(msg)
+            # not saving new addresses, so that update is attempted again.
+    else:
+        # print("nothing to do!")
+        pass
 
-time.sleep(300)
 
+while True:
+    do()
+    time.sleep(60)
