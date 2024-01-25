@@ -10,7 +10,7 @@ ip_versions_required = [4]  # MUST not be empty. Can be [4],[6] or [4,6]
 default_ttl = 600  # seconds
 checkDNS_interval_hrs = 12.1
 current_ip_file = "/tmp/current_ip.json"
-
+records_changed = 0
 
 def get_ovh_credentials():
     """
@@ -162,6 +162,7 @@ print(hosts)
 
 
 def do():
+    global records_changed
     try:
         with open(current_ip_file, 'r') as f:
             old_time, old_ipv4, old_ipv6 = json.load(f)
