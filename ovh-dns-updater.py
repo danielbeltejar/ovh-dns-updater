@@ -29,16 +29,6 @@ def get_ovh_credentials():
     }
 
 
-def get_namespace():
-    """
-    Retrieve the namespace from the service account token mounted in the pod.
-    """
-    namespace_path = '/var/run/secrets/kubernetes.io/serviceaccount/namespace'
-    with open(namespace_path, 'r') as f:
-        namespace = f.read().strip()
-    return namespace
-
-
 def get_config_map():
     """
     Load in-cluster configuration and fetch ConfigMap data.
@@ -156,8 +146,9 @@ def delete_record(domain, subdomain, typ):
 
 current_ipv4 = get_current_ip(4)
 current_ipv6 = get_current_ip(6)
-hosts = get_config_map()
 print('current ips: {} ; {}'.format(current_ipv4, current_ipv6))
+
+hosts = get_config_map()
 print(hosts)
 
 
@@ -211,5 +202,8 @@ def do():
 
 
 while True:
+    current_ipv4 = get_current_ip(4)
+    current_ipv6 = get_current_ip(6)
+    print('current ips: {} ; {}'.format(current_ipv4, current_ipv6))
     do()
     time.sleep(60)
