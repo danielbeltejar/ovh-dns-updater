@@ -1,13 +1,10 @@
-FROM cgr.dev/chainguard/python:latest-dev as builder
+FROM python:3.11-alpine
+ENV PYTHONUNBUFFERED 1
 
 WORKDIR /app
 
-COPY requirements.txt .
+COPY . .
 
-RUN pip install -r requirements.txt --user
+RUN pip install --no-cache-dir -r requirements.txt
 
-COPY ovh-dns-updater.py .
-
-ENV PYTHONUNBUFFERED 1
-
-ENTRYPOINT [ "python", "ovh-dns-updater.py" ]
+CMD ["python", "ovh-dns-updater.py"]
