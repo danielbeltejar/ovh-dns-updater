@@ -14,7 +14,7 @@ spec:
     spec:
           containers:
           - name: ovh-dns-updater
-            image: registry.server.local:5000/ovh-dns-updater:latest
+            image: harbor.server.local/danielbeltejar/ovh-dns-updater:latest
             env:
             - name: OVH_ENDPOINT
               value: "ovh-eu"
