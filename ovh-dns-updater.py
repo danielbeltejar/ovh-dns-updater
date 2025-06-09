@@ -205,4 +205,3 @@ while True:
     current_ipv4 = get_current_ip(4)
     current_ipv6 = get_current_ip(6)
     do()
-    time.sleep(60)

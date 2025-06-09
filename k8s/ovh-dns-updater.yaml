@@ -1,31 +1,36 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: batch/v1
+kind: CronJob
 metadata:
   name: ovh-dns-updater
 spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: ovh-dns-updater
-  template:
-    metadata:
-      labels:
-        app: ovh-dns-updater
+  schedule: "*/5 * * * *"
+  jobTemplate:
     spec:
+      template:
+        spec:
           containers:
-          - name: ovh-dns-updater
-            image: harbor.server.local/danielbeltejar/ovh-dns-updater:latest
-            env:
-            - name: OVH_ENDPOINT
-              value: "ovh-eu"
-            - name: OVH_APPLICATION_KEY
-              value: ""
-            - name: OVH_APPLICATION_SECRET
-              value: ""
-            - name: OVH_CONSUMER_KEY
-              value: ""
-            - name: OVH_HOSTS
-              valueFrom:
-                configMapKeyRef:
-                  name: ovh-dns-config
-                  key: hosts
+            - name: ovh-dns-updater
+              image: harbor.server.local/danielbeltejar/ovh-dns-updater:latest
+              env:
+                - name: OVH_ENDPOINT
+                  value: "ovh-eu"
+                - name: OVH_APPLICATION_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: ovh-dns-secrets
+                      key: OVH_APPLICATION_KEY
+                - name: OVH_APPLICATION_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      name: ovh-dns-secrets
+                      key: OVH_APPLICATION_SECRET
+                - name: OVH_CONSUMER_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: ovh-dns-secrets
+                      key: OVH_CONSUMER_KEY
+                - name: OVH_HOSTS
+                  valueFrom:
+                    configMapKeyRef:
+                      name: ovh-dns-config
+                      key: hosts
