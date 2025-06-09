@@ -19,5 +19,5 @@ WORKDIR /app
 
 ENV PYTHONPATH=/usr/local/lib/python${PYTHON_VERSION}/site-packages
 
-CMD ["python", "ovh-dns-updater.py"]
+CMD ["ovh-dns-updater.py"]
 ENV PYTHONPATH=/usr/local/lib/python${PYTHON_VERSION}/site-packages
