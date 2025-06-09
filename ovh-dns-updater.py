@@ -201,7 +201,7 @@ def do():
         pass
 
 
-while True:
+if __name__ == "__main__":
     current_ipv4 = get_current_ip(4)
     current_ipv6 = get_current_ip(6)
     do()
