@@ -1,100 +1,21 @@
-# ovh-dns-updater Microservice Migration
+# OVH DNS Updater  
 
-## Overview
+A Python script to automatically update OVH DNS records with your current public IP address (IPv4 and/or IPv6). Designed for use in Kubernetes environments or standalone deployments.  
 
-The `ovh-dns-updater` script has been migrated to a microservice architecture to enhance scalability, maintainability, and flexibility. This README provides an overview of the changes and instructions for deploying and managing the ovh-dns-updater microservice.
+---
 
-## Table of Contents
+## 📌 Overview  
 
-- [Changes](#changes)
-- [Prerequisites](#prerequisites)
-- [Configuration](#configuration)
-- [Deployment](#deployment)
-- [API Documentation](#api-documentation)
-- [Scaling](#scaling)
-- [Maintenance and Updates](#maintenance-and-updates)
-- [Contributing](#contributing)
-- [License](#license)
+This project periodically checks your public IP address and updates specified OVH DNS records to ensure they always point to your current IP. It supports both IPv4 and IPv6, and integrates with Kubernetes via a CronJob for automated execution.  
 
-## Changes
+---
 
-### Microservice Components
+## ✅ Features  
 
-The ovh-dns-updater has been refactored into the following microservice components:
+- **Automatic IP Detection**: Uses multiple services to fetch your current public IP address.  
+- **OVH API Integration**: Updates A and AAAA records via the OVH API.  
+- **Configurable TTL**: Set custom TTL values for DNS records.  
+- **Kubernetes Deployment**: Includes a CronJob and ConfigMap for Kubernetes environments.  
+- **IPv4/IPv6 Support**: Handles both IP versions seamlessly.  
 
-1. **Updater Service:**
-   - Core logic for updating A/AAAA DNS records at OVH.
-   - Manages interactions with the OVH API.
-   - Periodically checks and updates DNS records.
-
-2. **Config Service:**
-   - Handles configuration management.
-   - Retrieves domain/subdomain configurations from a centralized configuration store.
-   - Supports dynamic updates to configuration.
-
-3. **IP Service:**
-   - Retrieves the current public IPV4 and IPV6 addresses.
-   - Ensures the availability of IP addressing information.
-
-### Communication
-
-Microservices communicate via HTTP RESTful APIs. The Updater Service exposes endpoints for triggering updates, and the Config and IP Services provide configuration and IP information, respectively.
-
-### Dockerization
-
-Each microservice is containerized using Docker, enabling easy deployment and orchestration.
-
-## Prerequisites
-
-Before deploying the ovh-dns-updater microservice, ensure you have the following:
-
-- Docker installed on the target machine.
-- Access to the centralized configuration store for domain/subdomain configurations.
-- API access keys for the OVH API.
-
-## Configuration
-
-### Config Service
-
-Configure the Config Service with the connection details to the centralized configuration store.
-
-### IP Service
-
-No additional configuration is required for the IP Service.
-
-### Updater Service
-
-Configure the Updater Service with the following:
-
-- OVH API access keys.
-- Endpoints for the Config and IP Services.
-- Polling interval for checking and updating DNS records.
-
-## Deployment
-
-Deploy each microservice using Docker. Sample Docker Compose files are provided in the `docker-compose` directory.
-
-1. Build Docker images:
-
-   ```bash
-   docker-compose build
-   docker-compose up -d
-   ```
-   
-## Monitoring and Logging
-Microservices emit logs to standard output. Configure a centralized logging solution for log aggregation.
-
-### Updater Service Metrics
-Enable monitoring and metrics using Prometheus and Grafana. Sample configurations are available in the monitoring directory.
-
-## Scaling
-Scale microservices independently based on demand. Use container orchestration tools like Kubernetes for dynamic scaling.
-
-## Maintenance and Updates
-Regularly update microservice containers with new releases. Follow the update instructions in the CHANGELOG.
-
-## Contributing
-Please follow the Contributing Guidelines for contributing to the ovh-dns-updater microservice.
-
-## License
-This project is licensed under the GNU General Public License.
+---
